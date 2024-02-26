@@ -1,5 +1,5 @@
 {
-    "name": "definer",
+    "name": "amd-definer",
     "version": "1.0.0",
     "description": "define your dependencies and have asynchronous module loading",
     "main": "definer.js",
