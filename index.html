@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" style="background:#000">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>example amd</title>
+    <style type="text/css" media="all">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            color: gray;
+        }
+        body * {
+            padding: 10px;
+        }
+        .action, .list-item {
+            width: 100%;
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            background: hsla(244.6,12.5%,35.1%,0.728);
+            border-radius: 5px;
+            margin-top: 2em;
+        }
+        input {
+            outline: none;
+        }
+        button {
+            padding: 10px;
+            border: none;
+            color: white;
+            background: #4fd5b26c;
+        }
+        ul {
+            list-style: none;
+        }
+        ul li {
+            text-decoration: underline;
+            color: #cfccf0ba;
+        }
+    </style>
+    <script src="./definer.js"></script>
+</head>
+<body>
+    <div class="action">
+        <input type="text" placeholder="add item" name="item" id="item">
+        <button type="button">add</button>
+    </div>
+    <div class="list-item">
+        <h3>Lists</h3>
+        <ul></ul>
+    </div>
+    <script src="./example/main.js"></script>
+</body>
+</html>
