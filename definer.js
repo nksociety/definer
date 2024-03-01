@@ -1,9 +1,11 @@
 var definer = this.define = (function (path) {
     let mainFile;
     const Modules = {};
-
-    const exec = rewind(() => invokeModule(Modules[mainFile])&console.log(Modules), 10);
-
+    const files = [];
+    const exec = rewind(() => {
+        getModule(mainFile).execute()
+    }, 10);
+    
     function rewind(fn, timer) {
         let timeout, params;
         
@@ -31,7 +33,7 @@ var definer = this.define = (function (path) {
         };
     }
 
-    function resolveUrl(path) {
+    function basename(path) {
         let u;
         return (
             (u = path.substring(0, path.lastIndexOf("/") || 1)),
@@ -63,9 +65,7 @@ var definer = this.define = (function (path) {
             interval = null;
         }
         
-        var load = ()=> {
-            unbind()
-        }
+        var load = ()=> unbind();
         
         var error = ()=> {
             unbind()
@@ -85,6 +85,9 @@ var definer = this.define = (function (path) {
         for (let path of module.deps) {
             const dep = join(base, path);
             relativePath.push(dep);
+            const total = relativePath.length;
+            if (files.includes(dep)) continue;
+            files.push(dep)
             loadScript(dep);
         }
         module.deps = relativePath;
@@ -95,11 +98,7 @@ var definer = this.define = (function (path) {
             fn = deps;
             deps = [];
         }
-
-        return {
-            deps,
-            fn
-        };
+        return { deps, fn };
     }
 
     function getFile() {
@@ -118,34 +117,45 @@ var definer = this.define = (function (path) {
     function getModule(file) {
         return Modules[file];
     }
-
-    function iterateDeps(dependencies) {
-        const depExports = [];
-        for (let dependency of dependencies) {
-            const { module } = getModule(dependency);
-            depExports.push(module.exports);
-        }
-
-        for (let dependency of dependencies) {
-            invokeModule(getModule(dependency));
-        }
-
-        return depExports;
-    }
-
-    function invokeModule({ module, deps, fn }) {
-        const imports = iterateDeps(deps);
-        fn(imports, module.exports);
-    }
-
+    
     function setModule(file, deps, fn) {
         const url = new URL(file);
         const module = (Modules[url.pathname.trim()] = {
             fn,
             deps,
+            called: false,
             pathname: url.pathname,
-            module: { exports: {} }
+            module: { exports: {} },
+            execute(depParent, circular) {
+                for (let dep of this.deps) {
+                    if (circular&&dep===depParent||this.called) continue;
+                    getModule(dep).execute(this.pathname, dep === depParent);
+                }
+                
+                if (!this.called) {
+                    this.called = true;
+                    const value = this.fn(require, this.module, this.module.exports);
+                    if (value) {
+                        this.module.exports = value;
+                    }
+                }
+            }
         });
+        
+        function require(dep) {
+            const path = join(basename(url.pathname), dep);
+            const rm = getModule(path);
+            if (!rm) return console.error(`dependency ${path} is not defined! definer(['${dep}'], function(){})`), void 0;
+            if (!rm.called) console.warn(`Module ${rm.pathname} has not yet been called!`);
+            return rm.module.exports;
+        }
+    
+        Object.defineProperty(require, 'imports', {
+            get() {
+                return module.deps.map(dep => getModule(dep).module.exports)
+            }
+        })
+    
         return { module, url };
     }
 
@@ -153,7 +163,7 @@ var definer = this.define = (function (path) {
         const file = getFile();
         const { deps, fn } = getArgs(dependencies, fnwrapper);
         const { module, url } = setModule(file, deps, fn);
-        loadDeps(resolveUrl(url.pathname), module);
+        loadDeps(basename(url.pathname), module);
         exec();
         if (!mainFile) {
             mainFile = url.pathname;
