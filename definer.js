@@ -1,4 +1,4 @@
-var definer = this.define = (function (path) {
+var definer = this.define = (function () {
     let mainFile;
     const Modules = {};
     const files = [];
@@ -85,7 +85,6 @@ var definer = this.define = (function (path) {
         for (let path of module.deps) {
             const dep = join(base, path);
             relativePath.push(dep);
-            const total = relativePath.length;
             if (files.includes(dep)) continue;
             files.push(dep)
             loadScript(dep);
@@ -108,8 +107,9 @@ var definer = this.define = (function (path) {
         } catch (e) {
             file = e.stack
                 .split("\n")
+                .filter(a => a.trim().length !== 0)
                 .pop()
-                .replaceAll(/(at|[\s]|\:[\d]\:[\d])/gi, "");
+                .replaceAll(/(at|\@|[\s]|\:[\d]\:[\d])/gi, "");
         }
         return file;
     }
