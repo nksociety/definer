@@ -1,5 +1,5 @@
-<!doctype html>
-<html lang="en" style="background:#000">
+<!DOCTYPE html>
+<html lang="en" style="background: #000">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -56,7 +56,7 @@
                 }
             }
         </style>
-        <script src="./definer.js"></script>
+        <script src="./definer.es3.js"></script>
     </head>
     <body>
         <div class="action">
@@ -67,6 +67,14 @@
             <h3>Lists</h3>
             <ul></ul>
         </div>
-        <script src="./example/main.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            definer.load({
+                loads: [],
+                mains: [
+                    "https://unpkg.com/jquery@3.7.1/src/jquery.js",
+                    "example/main",
+                ],
+            });
+        </script>
     </body>
 </html>

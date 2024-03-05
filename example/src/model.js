@@ -1,6 +1,5 @@
-definer(['./event.js', './user.js'], function (require, module) {
-    const [event, user] = require.imports;
-    require('./event.js')
+definer(['./event.js', './user.js'], function (event, user, require, module) {
+    console.log(require('./event.js').click)
     const e = {
         btn: document.querySelector('button'),
         input: document.querySelector('input'),
@@ -14,5 +13,5 @@ definer(['./event.js', './user.js'], function (require, module) {
             this.btn.addEventListener('click', event.click)
         }
     }
-    module.exports = e;
+    return e;
 })
