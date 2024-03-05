@@ -83,4 +83,3 @@ definer(['https://unpkg.com/jquery@3.7.1/src/jquery.js'], function ($) {})
 > Circular dependencies such as "a.js" and "b.js" usually call "a.js" first,
 so you will not get the exports of "b.js" correctly unless it is in a function until
 the exports of "b.js" are added to the dependency on "a.js" see the examples folder.
-```
